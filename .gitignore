@@ -1,0 +1,96 @@
+# ---------------------------------------------------------------
+# 数据：原始与生成物不入库，人工维护的种子数据入库
+# ---------------------------------------------------------------
+data/raw/*
+!data/raw/.gitkeep
+data/generated/*
+!data/generated/.gitkeep
+
+# ---------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---------------------------------------------------------------
+# Java / Maven / Gradle
+# ---------------------------------------------------------------
+target/
+*.class
+*.jar
+*.war
+.gradle/
+!**/gradle/wrapper/gradle-wrapper.jar
+
+# ---------------------------------------------------------------
+# Node / 前端
+# ---------------------------------------------------------------
+node_modules/
+.pnpm-store/
+dist/
+dist-ssr/
+.vite/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+.stylelintcache
+
+# ---------------------------------------------------------------
+# IDE 与编辑器
+# ---------------------------------------------------------------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------------
+# 运行与部署
+# ---------------------------------------------------------------
+*.log
+logs/
+deploy/.env
+deploy/volumes/
+docker/volumes/
+*.pid
+*.hprof
+
+# ---------------------------------------------------------------
+# 工具缓存
+# ---------------------------------------------------------------
+.workbuddy/

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>系统数据流程图 — 基于Flink的408在线模考实时阅卷</title>
+<style>
+  :root{
+    --ink:#0B0B0B; --ink-2:#3F3F3F; --ink-3:#6B6B6B;
+    --line:#E4E4E0; --paper:#FFFFFF;
+    --teal-50:#E1F5EE; --teal-200:#5DCAA5; --teal-600:#0F6E56; --teal-800:#085041;
+    --pur-50:#EEEDFE; --pur-200:#AFA9EC; --pur-600:#534AB7; --pur-800:#3C3489;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:40px 24px 64px;
+    background:#F4F4F1; color:var(--ink);
+    font-family:"Source Han Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .sheet{
+    max-width:1160px; margin:0 auto; background:var(--paper);
+    padding:40px 40px 32px; border-radius:10px;
+    border:1px solid var(--line);
+  }
+  h1{font-size:17px; font-weight:500; margin:0 0 6px; letter-spacing:.2px}
+  .sub{font-size:12px; color:var(--ink-3); margin:0 0 28px; line-height:1.7}
+  .figcap{font-size:12px; color:var(--ink-3); text-align:center; margin:16px 0 0}
+  .notes{margin-top:30px; border-top:1px solid var(--line); padding-top:22px}
+  .notes h2{font-size:14px; font-weight:500; margin:0 0 12px}
+  .notes ol{margin:0; padding-left:20px; font-size:13px; color:var(--ink-2); line-height:2}
+  .notes ol b{font-weight:500; color:var(--ink)}
+  .bar{max-width:1160px; margin:0 auto 14px; display:flex; justify-content:flex-end}
+  button{
+    font:inherit; font-size:12px; padding:7px 14px; cursor:pointer;
+    border:1px solid var(--line); background:#fff; border-radius:6px; color:var(--ink-2);
+  }
+  button:hover{border-color:#C9C9C3; color:var(--ink)}
+  svg{display:block; width:100%; height:auto}
+  @media print{
+    body{background:#fff; padding:0}
+    .bar{display:none}
+    .sheet{border:0; padding:0; max-width:none}
+    .notes{page-break-inside:avoid}
+    @page{size:A4 landscape; margin:14mm}
+  }
+</style>
+</head>
+<body>
+
+<div class="bar"><button onclick="window.print()">打印 / 导出 PDF</button></div>
+
+<div class="sheet">
+  <h1>基于 Flink 的 408 在线模考实时阅卷系统 — 数据流程图</h1>
+  <p class="sub">图注：左侧为数据上行链路（考生作答事件写入并计算），右侧为结果回推链路（计算结果推送到监控大屏）。紫色虚线框为相较于原始方案新增的部分，用于补全“计算完成 → 大屏呈现”的实时闭环。</p>
+
+  <svg viewBox="0 0 1120 764" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>系统数据流程图</title>
+    <desc>数据上行链路自答题端经 Spring Boot 接入层进入 Kafka 的 exam.answer 主题，由 Flink 完成清洗去重、客观题判分、累积型聚合、速率型聚合、知识点正确率统计与异常检测，结果写入 MySQL 与 Redis。结果回推链路自 Flink 投递 exam.result 主题，经 Spring Boot 消费后由 WebSocket 广播至教师大屏。</desc>
+    <defs>
+      <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <text x="120" y="36" font-size="13" font-weight="500" fill="#0F6E56">① 数据上行链路</text>
+    <text x="720" y="36" font-size="13" font-weight="500" fill="#534AB7">② 结果回推链路</text>
+
+    <text x="96" y="92" font-size="12" fill="#888780" text-anchor="end">数据源层</text>
+    <text x="96" y="184" font-size="12" fill="#888780" text-anchor="end">接入层</text>
+    <text x="96" y="276" font-size="12" fill="#888780" text-anchor="end">消息层</text>
+    <text x="96" y="352" font-size="12" fill="#888780" text-anchor="end">计算层</text>
+    <text x="96" y="712" font-size="12" fill="#888780" text-anchor="end">存储层</text>
+
+    <rect x="120" y="60" width="540" height="64" rx="9" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+    <text x="144" y="86" font-size="15" font-weight="500" fill="#085041">答题端（Vue3）</text>
+    <text x="144" y="106" font-size="13" fill="#0F6E56">作答事件 · 交卷事件</text>
+    <path d="M390 128 L390 148" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#a)"/>
+
+    <rect x="120" y="152" width="540" height="64" rx="9" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+    <text x="144" y="178" font-size="15" font-weight="500" fill="#085041">Spring Boot 接入层</text>
+    <text x="144" y="198" font-size="13" fill="#0F6E56">REST 校验 · Kafka 生产者</text>
+    <path d="M390 220 L390 240" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#a)"/>
+
+    <rect x="120" y="244" width="540" height="64" rx="9" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+    <text x="144" y="270" font-size="15" font-weight="500" fill="#085041">Kafka · exam.answer</text>
+    <text x="144" y="290" font-size="13" fill="#0F6E56">按 examId 单分区，保证同一场考试内有序</text>
+    <path d="M390 312 L390 332" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#a)"/>
+
+    <rect x="120" y="336" width="540" height="312" rx="12" fill="#F7FCFA" stroke="#9FE1CB" stroke-width="0.5"/>
+    <text x="144" y="364" font-size="15" font-weight="500" fill="#085041">Flink 实时计算作业（DataStream API）</text>
+
+    <rect x="144" y="384" width="492" height="34" rx="7" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+    <text x="390" y="405" font-size="13" fill="#085041" text-anchor="middle" dominant-baseline="central">清洗去重 · 字段校验 · 重复事件剔除</text>
+
+    <rect x="144" y="426" width="492" height="34" rx="7" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+    <text x="390" y="447" font-size="13" fill="#085041" text-anchor="middle" dominant-baseline="central">客观题判分 · 标准答案维表内存常驻</text>
+
+    <rect x="144" y="468" width="492" height="34" rx="7" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+    <text x="390" y="489" font-size="13" fill="#085041" text-anchor="middle" dominant-baseline="central">累积型聚合 · 平均分与排名（upsert 幂等写）</text>
+
+    <rect x="144" y="510" width="492" height="34" rx="7" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+    <text x="390" y="531" font-size="13" fill="#085041" text-anchor="middle" dominant-baseline="central">速率型聚合 · 1min 滚动窗口（在线数 / 交卷速率）</text>
+
+    <rect x="144" y="552" width="492" height="34" rx="7" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+    <text x="390" y="573" font-size="13" fill="#085041" text-anchor="middle" dominant-baseline="central">知识点正确率 · 按考点维度分组统计</text>
+
+    <rect x="144" y="594" width="492" height="34" rx="7" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="0.5"/>
+    <text x="390" y="615" font-size="13" fill="#085041" text-anchor="middle" dominant-baseline="central">异常检测 · ValueState 状态 + YAML 可配置规则</text>
+
+    <path d="M300 652 L300 676" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#a)"/>
+    <path d="M480 652 L480 676" fill="none" stroke="#888780" stroke-width="1.5" marker-start="url(#a)" marker-end="url(#a)"/>
+
+    <rect x="120" y="680" width="262" height="64" rx="9" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+    <text x="144" y="706" font-size="15" font-weight="500" fill="#085041">MySQL</text>
+    <text x="144" y="726" font-size="13" fill="#0F6E56">成绩明细 · 预聚合指标</text>
+
+    <rect x="398" y="680" width="262" height="64" rx="9" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+    <text x="422" y="706" font-size="15" font-weight="500" fill="#085041">Redis</text>
+    <text x="422" y="726" font-size="13" fill="#0F6E56">标准答案维表 · 实时热数据</text>
+
+    <rect x="720" y="560" width="360" height="64" rx="9" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5" stroke-dasharray="5 3"/>
+    <text x="744" y="586" font-size="15" font-weight="500" fill="#3C3489">Kafka · exam.result</text>
+    <text x="744" y="606" font-size="13" fill="#534AB7">Flink Sink 双写时同步投递</text>
+
+    <rect x="720" y="360" width="360" height="64" rx="9" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5" stroke-dasharray="5 3"/>
+    <text x="744" y="386" font-size="15" font-weight="500" fill="#3C3489">Spring Boot 消费 + WebSocket 广播</text>
+    <text x="744" y="406" font-size="13" fill="#534AB7">@KafkaListener 收到即推，无需轮询</text>
+
+    <rect x="720" y="60" width="360" height="64" rx="9" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5" stroke-dasharray="5 3"/>
+    <text x="744" y="86" font-size="15" font-weight="500" fill="#3C3489">教师监控大屏</text>
+    <text x="744" y="106" font-size="13" fill="#534AB7">ECharts + DataV · 前端 200ms 合并节流</text>
+
+    <path d="M664 592 L712 592" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#a)"/>
+    <path d="M900 556 L900 428" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#a)"/>
+    <path d="M900 356 L900 128" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#a)"/>
+
+    <text x="916" y="256" font-size="12" fill="#534AB7">WebSocket 长连接</text>
+    <text x="916" y="274" font-size="12" fill="#888780">教师端并发量小，单实例足够</text>
+  </svg>
+
+  <p class="figcap">图 1-1　系统数据流程图（实线为数据写入链路，紫色虚线为结果回推链路）</p>
+
+  <div class="notes">
+    <h2>图中三处改动对应的设计决策</h2>
+    <ol>
+      <li><b>结果回推链路（紫色虚线）</b>：原始方案中 Flink 只向下写 MySQL / Redis，没有任何通道回到前端。补一个 <code>exam.result</code> 主题后，Spring Boot 以消费者身份收到即可广播，链路延迟从轮询的 1~3 秒降到百毫秒级，且不引入新组件。</li>
+      <li><b>双通道聚合</b>：累积型指标（平均分、排名、知识点正确率）走事件驱动的增量更新与 upsert；速率型指标（在线人数、每分钟交卷数）走滚动窗口。二者混用是常见错误——用窗口算“当前平均分”会导致每个窗口各算各的，大屏数字跳变。</li>
+      <li><b>Redis 双向箭头</b>：Flink 启动时通过 <code>open()</code> 把标准答案全量加载进内存并定时刷新，同时把计算结果作为热数据写回。一场考试的答案量级在千条以内，无需引入 Flink CDC 维表 Join。</li>
+    </ol>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+# 依赖 — 题库数据加工脚本
+# 刻意保持最小：不引入 OCR / 重型 PDF 库，保证可一键复现
+pypdf>=4.0,<6.0
+# 2023 年答案 PDF 为 AES 空口令加密，pypdf 解密需要 cryptography 后端
+cryptography>=42.0

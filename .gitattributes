@@ -1,0 +1,32 @@
+# 统一换行符：文本文件入库为 LF，Windows 检出仍为 LF（避免脚本因 CRLF 出错）
+* text=auto eol=lf
+
+# 明确的语言标注
+*.py    text diff=python
+*.java  text diff=java
+*.sql   text diff=sql
+*.md    text diff=markdown
+*.yml   text
+*.yaml  text
+*.json  text
+*.xml   text
+*.html  text diff=html
+*.css   text
+*.js    text
+*.ts    text
+*.vue   text
+
+# 二进制
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.zip   binary
+*.jar   binary
+
+# GitHub 语言统计：文档与生成物不计入
+docs/**                linguist-documentation
+sql/02_question_seed.sql linguist-generated=true
+data/**                linguist-vendored
