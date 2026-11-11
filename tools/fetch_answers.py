@@ -108,10 +108,16 @@ def main():
         rows += [(y, n, ans[n], src) for n in range(1, 41)]
         print(f"{y}  {''.join(ans[n] for n in range(1, 41))}  ({src})  分布 {bad}")
 
-    with open(OUT, "w", encoding="utf-8-sig", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(["year", "qno", "answer", "source"])
-        w.writerows(rows)
+    try:
+        with open(OUT, "w", encoding="utf-8-sig", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["year", "qno", "answer", "source"])
+            w.writerows(rows)
+    except PermissionError:
+        raise SystemExit(
+            f"无法写入 {OUT.relative_to(ROOT)}：文件被其他程序占用。\n"
+            "常见原因是用 Excel / WPS 打开了该 CSV，关闭后重试。"
+        )
     print(f"\n写出 {OUT.relative_to(ROOT)}，共 {len(rows)} 条")
 
 

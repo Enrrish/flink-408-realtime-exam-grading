@@ -21,7 +21,7 @@ data/raw/408-exam-paper/          (原始 PDF，不入库)
 pip install -r requirements.txt
 ```
 
-仅依赖 `pypdf`。刻意不引入 OCR / 重型 PDF 库，保证他人 clone 后可一键复现。
+仅依赖 `pypdf`（解密 2023 年答案 PDF 另需 `cryptography`）。刻意不引入 OCR / 重型 PDF 库，保证他人 clone 后可一键复现。
 
 ## 脚本
 
@@ -40,6 +40,8 @@ python tools/fetch_answers.py
 | 2024–2026 | 带水印截图，无文本层 | 读图转录（`VISUAL` 字面量，注明页码） |
 
 **2022 年的坑**：答案表字母按**列**排布（第 c 列对应题号 c+1、c+9、c+17、c+25、c+33）。普通抽取得到的 `DAAAB BCDBD…` 按题号直读会 40 题全错。脚本已固化为 `from_table()`，与逐题解析逐题比对，冲突直接抛错。
+
+> 若报"文件被其他程序占用"，通常是 Excel / WPS 打开了 `data/seed/answers.csv`，关闭后重试。
 
 ### `parse_408.py` — 解析题库
 
